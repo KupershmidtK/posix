@@ -1,5 +1,6 @@
 stages:
   - build
+  - builtin-test
   - test
 
 build-clang:
@@ -56,3 +57,15 @@ test:
   stage: test
   script:
     - ./test.sh
+
+builtin_tests:
+  stage: builtin-test
+  script:
+    - cd ..
+    - CXX=clang++ make build_tests  
+    - make run_tests | doctest-junit-report > report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+
