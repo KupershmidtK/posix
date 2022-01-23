@@ -1,8 +1,58 @@
 stages:
   - build
+  - test
 
 build-clang:
   stage: build
   script:
-    - ls -l
     - ./compile_test_clang.sh
+
+build-gcc:
+  stage: build
+  script:
+    - ./compile_test_gcc.sh
+
+single-value:
+  stage: test
+  script:
+    - ./single_value.sh
+
+two-values:
+  stage: test
+  script:
+    - ./two_values.sh
+
+odd:
+  stage: test
+  script:
+    - ./odd.sh
+
+even:
+  stage: test
+  script:
+    - ./even.sh
+
+empty_input:
+  stage: test
+  script:
+    - ./empty_input.sh
+
+invalid_input:
+  stage: test
+  script:
+    - ./invalid_input.sh
+
+random:
+  stage: test
+  script:
+    - ./random.sh
+
+asan:
+  stage: test
+  script:
+    - ./asan.sh
+
+test:
+  stage: test
+  script:
+    - ./test.sh
