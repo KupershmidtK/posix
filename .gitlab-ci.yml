@@ -1,9 +1,8 @@
 stages:
   - build
 
-build-job:
+build-clang:
   stage: build
   script:
-    - echo "start stage"
-    - CXX=clang++ make
-    - echo "done stage"
+    - ls -l
+    - ./compile_test_clang.sh
