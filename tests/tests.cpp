@@ -2,6 +2,4 @@
 #include <doctest.h>
 #include <producer_consumer.h>
 
-TEST_CASE("just_example") {
-    CHECK(4 == 4);
-}
+TEST_CASE("just_example") { CHECK(4 == 4); }
