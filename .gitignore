@@ -1,1 +1,4 @@
 posix
+tests/tests
+Makefile
+tests/doctest.h

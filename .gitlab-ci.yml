@@ -1,6 +1,7 @@
 stages:
   - build
   - builtin-test
+  - tidy
   - test
 
 build-clang:
@@ -12,6 +13,12 @@ build-gcc:
   stage: build
   script:
     - ./compile_test_gcc.sh
+
+tidy:
+  stage: tidy
+  script:
+    - make clang_format
+    - make clang_tidy
 
 single-value:
   stage: test

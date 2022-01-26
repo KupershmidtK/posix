@@ -1,3 +1,5 @@
+# DO NOT TOUCH IT FILE !!!
+
 SRC_TEST_FILES = $(filter-out main.cpp, $(wildcard *.cpp)) tests/*.cpp
 SHELL := /bin/bash
 
