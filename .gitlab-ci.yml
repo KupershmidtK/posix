@@ -4,72 +4,20 @@ stages:
   - tidy
   - test
 
-build-clang:
+build:
   stage: build
   script:
-    - ./compile_test_clang.sh
-
-build-gcc:
-  stage: build
-  script:
-    - ./compile_test_gcc.sh
-
-tidy:
-  stage: tidy
-  script:
-    - cd -- "$GIT_CLONE_PATH"
-    - make clang_format
-    - make clang_tidy
-
-single-value:
-  stage: test
-  script:
-    - ./single_value.sh
-
-two-values:
-  stage: test
-  script:
-    - ./two_values.sh
-
-odd:
-  stage: test
-  script:
-    - ./odd.sh
-
-even:
-  stage: test
-  script:
-    - ./even.sh
-
-empty_input:
-  stage: test
-  script:
-    - ./empty_input.sh
-
-invalid_input:
-  stage: test
-  script:
-    - ./invalid_input.sh
-
-random:
-  stage: test
-  script:
-    - ./random.sh
-
-asan:
-  stage: test
-  script:
-    - ./asan.sh
-
-test:
-  stage: test
-  script:
-    - ./test.sh
+    - bash build
+  artifacts:
+    when: always
+    reports:
+      junit: results/TEST-build.xml
 
 builtin_tests:
   stage: builtin-test
+  needs: ["build"]
   script:
-    - cd ..
+    - cd -- "$GIT_CLONE_PATH"
     - CXX=clang++ make build_tests  
     - make run_tests | doctest-junit-report > report.xml
   artifacts:
@@ -77,3 +25,20 @@ builtin_tests:
     reports:
       junit: report.xml
 
+tidy:
+  stage: tidy
+  needs: ["build"]
+  script:
+    - cd -- "$GIT_CLONE_PATH"
+    - make clang_format
+    - make clang_tidy
+
+tests:
+  stage: test
+  needs: ["build", "tidy"]
+  script:
+    - bash tests
+  artifacts:
+    when: always
+    reports:
+      junit: results/TEST-build.xml
