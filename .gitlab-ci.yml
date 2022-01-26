@@ -17,6 +17,7 @@ build-gcc:
 tidy:
   stage: tidy
   script:
+    - cd -- "$GIT_CLONE_PATH"
     - make clang_format
     - make clang_tidy
 
