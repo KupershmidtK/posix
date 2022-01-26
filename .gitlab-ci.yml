@@ -8,6 +8,7 @@ build:
   stage: build
   script:
     - bash build
+    - mv -- results "$GIT_CLONE_PATH"
   artifacts:
     when: always
     reports:
@@ -38,6 +39,7 @@ tests:
   needs: ["build", "tidy"]
   script:
     - bash tests
+    - mv -- results "$GIT_CLONE_PATH"
   artifacts:
     when: always
     reports:
