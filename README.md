@@ -207,4 +207,4 @@ After creating a merge request, a pipeline will appear in your branch consisting
  - **tidy** - static analyzer and style guide compliance check
  - **test** - integration tests that check the performance of your project
 
-In addition to pipeline stages, merge request will display tests and their execution results. For dropped tests, you can see the detailed reason for the falls. Detailed information about the gitlab pipeline can be found [here](https://docs.gitlab.com/ee/ci/pipelines /)
+In addition to pipeline stages, merge request will display tests and their execution results. For dropped tests, you can see the detailed reason for the falls. Detailed information about the gitlab pipeline can be found [here](https://docs.gitlab.com/ee/ci/pipelines/)
