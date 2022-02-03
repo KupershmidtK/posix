@@ -25,7 +25,7 @@
 
 Также необходимо реализовать поддержку ключа *–debug*, при использовании которого каждый **consumer**-поток будет выводить пару (*tid*, *psum*), где *tid* реализуется с помощью функции **get_tid()**, а *psum* это сумма которую посчитал поток. Вывод значений *psum* происходит при каждом изменении.
 
-Функция **get_tid()** возвращает идентификатор потока. Идентификатор потока это не просто **pthread_self()**, а уникальное для каждого потока число в диапазоне *1 .. 3+N*. Значение этого числа предполагается хранить в *TLS*. Память под сохраняемое значение должна выделяться в heap, а указатель на нее в *TLS*. Так-же функция **get_tid** должна быть самодостаточной (для использования ее в другом проекте должно быть достаточно только скопировать **get_tid** и использовать)
+Функция **get_tid()** возвращает идентификатор потока. Идентификатор потока это не просто **pthread_self()**, а уникальное для каждого потока число в диапазоне *1 .. 3+N*. Значение этого числа предполагается хранить в *TLS*. Память под сохраняемое значение должна выделяться в heap, а указатель на нее в *TLS*. Так-же функция **get_tid** должна быть самодостаточной (Для использования ее в другом проекте должно быть достаточно только скопировать **get_tid** и использовать. Но при этом можно добавлять системные заголовочные файлы)
 
 В поток вывода должно попадать только результирующее значение, по умолчанию никакой отладочной или запросной информации выводиться не должно.
 
@@ -66,23 +66,27 @@ int get_tid() {
  // 1 to 3+N thread ID
  return 0;
 }
+
 void* producer_routine(void* arg) {
  (void)arg;
  // read data, loop through each value and update the value, notify consumer,
  // wait for consumer to process
  return nullptr;
 }
+
 void* consumer_routine(void* arg) {
  (void)arg;
  // for every update issued by producer, read the value and add to sum
  // return pointer to result (for particular consumer)
  return nullptr;
 }
+
 void* consumer_interruptor_routine(void* arg) {
  (void)arg;
  // interrupt random consumer while producer is running
  return nullptr;
 }
+
 // the declaration of run threads can be changed as you like
 int run_threads() {
  // start N threads and wait until they're done
