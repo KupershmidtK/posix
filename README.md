@@ -23,7 +23,7 @@ Only the pthread API can be used to ensure interthreaded communication. At the s
 
 It is also necessary to implement support for the *–debug* key, when using which each **consumer** thread will output a pair (*tid*, *psum*), where *tid* is implemented using the **get_tid()** function, and *psum* is the sum that the thread calculated. The output of *psum* values occurs with each change.
 
-The **get_id()** function returns the thread ID. The thread ID is not just **pthread_self()**, but a unique number for each thread in the range *1.. 3+N*. The value of this number is supposed to be stored in *TLS*. The memory for the stored value should be allocated in heap, and the pointer to it in *TLS*. Also, the **get_tid** function should be self-sufficient (to use it in another project, it should only be enough to copy **get_tid** and use)
+The **get_id()** function returns the thread ID. The thread ID is not just **pthread_self()**, but a unique number for each thread in the range *1.. 3+N*. The value of this number is supposed to be stored in *TLS*. The memory for the stored value should be allocated in heap, and the pointer to it in *TLS*. Also, the **get_tid** function should be self-sufficient (To use it in another project, it should only be enough to copy **get_tid** and use. But at the same time, you can add system header files)
 
 Only the resulting value should get into the output stream, by default no debugging or request information should be output.
 
