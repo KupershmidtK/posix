@@ -94,7 +94,7 @@ int run_threads() {
 ```
 
 # Setup Environment
-All tests are run under 'ubuntu:18.04`. You can choose a different version of ubuntu or a different distribution. But then the tests work on 'ubuntu:18.04` is not guaranteed. To use 'ubuntu:18.04` there are at least three ways:
+All tests are run under `ubuntu:18.04`. You can choose a different version of ubuntu or a different distribution. But then the tests work on `ubuntu:18.04` is not guaranteed. To use `ubuntu:18.04` there are at least three ways:
  - native OS installation
  - installation using Virtual Box
  - installation using docker
