@@ -2,14 +2,30 @@
 #include <doctest.h>
 #include <producer_consumer.h>
 
-TEST_CASE("check get_tid()") {
+void* get_tid_func(void* arg) {
+    (void)arg;
+    int* tid = new int;
+    *tid = get_tid();
+    return (void*)tid;
+}
 
-    pthread_key_t tid_number_key;
-    int tid = 100;
-    pthread_key_create(&tid_number_key, NULL);
-    pthread_setspecific(tid_number_key, (void*)&tid);
-    
-    CHECK( get_tid() == tid );
+TEST_CASE("check get_tid()") {
+   
+    CHECK( get_tid() == 1 );
+    CHECK( get_tid() == 1 );
+
+    pthread_t th1, th2;
+    int* tid;
+
+    pthread_create(&th1, NULL, get_tid_func, NULL);
+    pthread_join(th1, (void**)&tid);
+    CHECK( *tid == 2 );
+    delete tid;
+
+    pthread_create(&th2, NULL, get_tid_func, NULL);
+    pthread_join(th2, (void**)&tid);
+    CHECK( *tid == 3 );
+    delete tid;
 }
 
 TEST_CASE("check run_threads()") {

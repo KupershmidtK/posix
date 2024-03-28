@@ -5,29 +5,26 @@
 #include <ctime>
 #include <iostream>
 
-
 static pthread_mutex_t counter_mutex;
 static sem_t read_mutex;
 static sem_t write_mutex;
 
-
-static int counter = 3;
-static pthread_key_t tid_number_key;
-
 static struct context context;
 static struct app_data data;
 
-int get_next_counter() {
-  int ret = 0;
+int get_tid() {
+    static int next_id = 0;
+    static thread_local int tid = 0;
 
-  pthread_mutex_lock(&counter_mutex);
-  ret = ++counter;
-  pthread_mutex_unlock(&counter_mutex);
+    if(tid == 0) {
+      pthread_mutex_lock(&counter_mutex);
+      tid = ++next_id;
+      pthread_mutex_unlock(&counter_mutex);
+    }
 
-  return ret;
+    return tid;
 }
 
-int get_tid() { return *(int*)pthread_getspecific(tid_number_key); }
 
 void* producer_routine(void* arg) {
   (void)arg;
@@ -58,9 +55,6 @@ void* consumer_routine(void* arg) {
 
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 
-  static thread_local int tid = get_next_counter();
-  pthread_setspecific(tid_number_key, (void*)&tid);
-
   int* result = new int;
 
   while (true) {
@@ -89,7 +83,7 @@ void* consumer_routine(void* arg) {
 
 void* consumer_interruptor_routine(void* arg) {
   (void)arg;
-  // interrupt random consumer while producer is running
+
 
   std::srand(std::time(nullptr));
 
@@ -120,9 +114,6 @@ int run_threads(unsigned long consumers_number, unsigned long max_sleep_timeout,
   data.values = values;
 
   //----------------------------------------------------
-
-  pthread_key_create(&tid_number_key, NULL);
-
   pthread_mutex_init(&counter_mutex, NULL);
   sem_init(&write_mutex, 0, 1);
   sem_init(&read_mutex, 0, 0);
