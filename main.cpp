@@ -1,6 +1,6 @@
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 #include "producer_consumer.h"
 
 bool check_atribute(int argc) {
@@ -34,11 +34,10 @@ int main(int argc, char* argv[]) {
 
   bool debug_mode = false;
   std::string debug_str("-debug");
-  if(argc >= 4)
-      debug_mode = debug_str.compare(argv[3]) == 0;
+  if (argc >= 4) debug_mode = debug_str.compare(argv[3]) == 0;
 
-//----------------------------------
-  std::vector<int> values; 
+  //----------------------------------
+  std::vector<int> values;
   std::string data_string;
   std::getline(std::cin, data_string);
   std::stringstream iss(data_string);
@@ -47,8 +46,8 @@ int main(int argc, char* argv[]) {
   while (iss >> number) {
     values.push_back(number);
   }
-//----------------------------------
-  
+  //----------------------------------
+
   std::cout << run_threads(t_cnt, timeout, debug_mode, values) << std::endl;
   return 0;
 }

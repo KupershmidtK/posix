@@ -16,7 +16,9 @@ struct context {
 
 struct app_data {
   int value;
-  std::vector<int> values;
+
+  int* values;
+  size_t values_size;
 };
 
 int get_tid();

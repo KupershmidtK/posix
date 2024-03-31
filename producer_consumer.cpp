@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <ctime>
 #include <iostream>
+#include <memory>
 
-static pthread_mutex_t counter_mutex;
 static sem_t read_mutex;
 static sem_t write_mutex;
 
@@ -13,26 +13,28 @@ static struct context context;
 static struct app_data data;
 
 int get_tid() {
-    static int next_id = 0;
-    static thread_local int tid = 0;
+  static pthread_mutex_t counter_mutex;
+  static int next_id = 0;
 
-    if(tid == 0) {
-      pthread_mutex_lock(&counter_mutex);
-      tid = ++next_id;
-      pthread_mutex_unlock(&counter_mutex);
-    }
+  static thread_local std::unique_ptr<int> tid_ptr;
 
-    return tid;
+  if (tid_ptr == nullptr) {
+    pthread_mutex_lock(&counter_mutex);
+    tid_ptr = std::unique_ptr<int>(new int());
+    *tid_ptr = ++next_id;
+    pthread_mutex_unlock(&counter_mutex);
+  }
+
+  return *tid_ptr;
 }
-
 
 void* producer_routine(void* arg) {
   (void)arg;
 
-  for (auto& value : data.values) {
+  for (size_t i = 0; i < data.values_size; i++) {
     sem_wait(&write_mutex);
 
-    data.value = value;
+    data.value = data.values[i];
 
     sem_post(&read_mutex);
   }
@@ -55,7 +57,7 @@ void* consumer_routine(void* arg) {
 
   pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
 
-  int* result = new int;
+  int result = 0;
 
   while (true) {
     sem_wait(&read_mutex);
@@ -64,10 +66,10 @@ void* consumer_routine(void* arg) {
       sem_post(&read_mutex);
       break;
     }
-    *result += data.value;
+    result += data.value;
 
     if (context.debug_mode) {
-      print_result(*result);
+      print_result(result);
     }
 
     sem_post(&write_mutex);
@@ -78,12 +80,14 @@ void* consumer_routine(void* arg) {
     }
   }
 
-  return result;
+  int* ret_result = new int;
+  *ret_result = result;
+
+  return ret_result;
 }
 
 void* consumer_interruptor_routine(void* arg) {
   (void)arg;
-
 
   std::srand(std::time(nullptr));
 
@@ -98,9 +102,11 @@ void* consumer_interruptor_routine(void* arg) {
 }
 
 int run_threads(unsigned long consumers_number, unsigned long max_sleep_timeout,
-                bool debug_mode, std::vector<int> &values) {
-
+                bool debug_mode, std::vector<int>& values) {
   if (values.size() == 0) return 0;
+
+  // for(size_t i = 0; i < values.size(); i++)
+  //   std::cout << values[i] << " " << std::endl;
 
   //------------------------------------------------
   context.stop_flag = false;
@@ -111,10 +117,11 @@ int run_threads(unsigned long consumers_number, unsigned long max_sleep_timeout,
 
   //---------------------------------------------------
   data.value = 0;
-  data.values = values;
+  data.values = values.data();
+  data.values_size = values.size();
 
   //----------------------------------------------------
-  pthread_mutex_init(&counter_mutex, NULL);
+  // pthread_mutex_init(&counter_mutex, NULL);
   sem_init(&write_mutex, 0, 1);
   sem_init(&read_mutex, 0, 0);
 
@@ -147,12 +154,13 @@ int run_threads(unsigned long consumers_number, unsigned long max_sleep_timeout,
     result += *ret_value[i];
     delete ret_value[i];
   }
+
   //================================================================
 
   delete[] context.consumers_tid;
   delete[] ret_value;
 
-  pthread_mutex_destroy(&counter_mutex);
+  // pthread_mutex_destroy(&counter_mutex);
   sem_destroy(&read_mutex);
   sem_destroy(&write_mutex);
 

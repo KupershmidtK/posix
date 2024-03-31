@@ -4,7 +4,7 @@ SRC_TEST_FILES = $(filter-out main.cpp, $(wildcard *.cpp)) tests/*.cpp
 SHELL := /bin/bash
 
 all:
-	$(CXX) *.cpp -std=c++17 -g -O3 -Werror -Wall -Wextra -pthread -pedantic -o posix
+	$(CXX) *.cpp -std=c++17 -g -O3 -Werror -Wall -Wextra -pthread -pedantic -fsanitize=address -static-libasan -o posix
 
 run_tests:
 	./tests/tests -s -d
