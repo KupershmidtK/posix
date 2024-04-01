@@ -5,6 +5,7 @@
 #include <ctime>
 #include <iostream>
 #include <memory>
+#include <atomic>
 
 static sem_t read_mutex;
 static sem_t write_mutex;
@@ -13,18 +14,13 @@ static struct context context;
 static struct app_data data;
 
 int get_tid() {
-  static pthread_mutex_t counter_mutex;
-  static int next_id = 0;
-
+  static std::atomic<int> next_id{0};
   static thread_local std::unique_ptr<int> tid_ptr;
 
   if (tid_ptr == nullptr) {
-    pthread_mutex_lock(&counter_mutex);
     tid_ptr = std::unique_ptr<int>(new int());
     *tid_ptr = ++next_id;
-    pthread_mutex_unlock(&counter_mutex);
   }
-
   return *tid_ptr;
 }
 

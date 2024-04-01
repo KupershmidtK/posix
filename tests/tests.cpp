@@ -9,22 +9,30 @@ void* get_tid_func(void* arg) {
   return (void*)tid;
 }
 
+
 TEST_CASE("check get_tid()") {
-  CHECK(get_tid() == 1);
-  CHECK(get_tid() == 1);
+  const int SIZE = 1000;
+  pthread_t th[SIZE];
+  int* tid[SIZE];
+  std::vector<int> results;
 
-  pthread_t th1, th2;
-  int* tid;
+  for (size_t i = 0; i < SIZE; i++)
+  {
+    pthread_create(&th[i], NULL, get_tid_func, NULL);
+  }
 
-  pthread_create(&th1, NULL, get_tid_func, NULL);
-  pthread_join(th1, (void**)&tid);
-  CHECK(*tid == 2);
-  delete tid;
+  for (size_t i = 0; i < SIZE; i++)
+  {
+      pthread_join(th[i], (void**)&tid[i]);
+      results.push_back(*tid[i]);
+      delete tid[i];
+  }
 
-  pthread_create(&th2, NULL, get_tid_func, NULL);
-  pthread_join(th2, (void**)&tid);
-  CHECK(*tid == 3);
-  delete tid;
+  std::sort(results.begin(), results.end());
+  auto duplicate = std::adjacent_find(results.begin(), results.end());
+
+  CHECK( duplicate == results.end() ); // no duplicated tid's
+  CHECK( results.back() == SIZE );
 }
 
 TEST_CASE("check run_threads()") {
